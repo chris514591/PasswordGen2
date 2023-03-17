@@ -9,20 +9,20 @@ import (
 	"time"
 )
 
-func generatePassword(length int) string {
+func generatePassword(passLength int) string {
 	rand.Seed(time.Now().UnixNano())
-	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[]|:;<>,.?/~")
-	password := make([]rune, length)
+	characters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[]|:;<>,.?/~")
+	password := make([]rune, passLength)
 	for i := range password {
-		password[i] = chars[rand.Intn(len(chars))]
+		password[i] = characters[rand.Intn(len(characters))]
 		time.Sleep(100 * time.Millisecond)
 	}
 	return string(password)
 }
 
 var (
-	length = flag.Int("length", 10, "password length")
-	count  = flag.Int("count", 3, "number of passwords to generate")
+	length = flag.Int("Length", 10, "password length")
+	count  = flag.Int("Count", 3, "number of passwords to generate")
 )
 
 func main() {
