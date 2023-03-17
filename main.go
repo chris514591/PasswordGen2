@@ -47,7 +47,13 @@ func main() {
 		for i := 0; i < *count; i++ {
 			password := generatePassword(*length)
 			fmt.Println(password)
+			err1 := clipboard.WriteAll(password)
+			if err1 != nil {
+				fmt.Println("Failed to copy to clipboard:", err1)
+				// How to put err1 := clipboard... above fmt.Println("Copied last...") without undeclared name?
+			} 
 		}
+			fmt.Println("Copied last generated password to clipboard!")
 	} else {
 		password := generatePassword(*length)
 		fmt.Println(password)
