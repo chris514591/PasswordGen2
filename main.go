@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/atotto/clipboard"
 )
 
 func generatePassword(passLength int) string {
@@ -50,5 +52,11 @@ func main() {
 	} else {
 		password := generatePassword(*length)
 		fmt.Println(password)
+		err1 := clipboard.WriteAll(password)
+		if err1 != nil {
+			fmt.Println("Failed to copy to clipboard:", err1)
+		} else {
+			fmt.Println("Copied to clipboard!")
+		}
 	}
 }
