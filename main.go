@@ -21,7 +21,7 @@ func generatePassword(passLength int) string {
 }
 
 var (
-	length = flag.Int("ength", 10, "password length")
+	length = flag.Int("length", 10, "password length")
 	count  = flag.Int("count", 3, "number of passwords to generate")
 )
 
