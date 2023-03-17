@@ -20,20 +20,18 @@ func generatePassword(passLength int) string {
 	return string(password)
 }
 
-func init() {
-	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.SetOutput(logFile)
-}
-
 var (
 	length = flag.Int("Length", 10, "password length")
 	count  = flag.Int("Count", 3, "number of passwords to generate")
 )
 
 func main() {
+	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(logFile)
+
 	flag.Parse()
 
 	if *length <= 0 {
