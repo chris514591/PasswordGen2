@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"os"
 	"time"
-
 	"github.com/atotto/clipboard"
 )
 
