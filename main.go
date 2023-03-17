@@ -15,7 +15,7 @@ func generatePassword(passLength int) string {
 	password := make([]rune, passLength)
 	for i := range password {
 		password[i] = characters[rand.Intn(len(characters))]
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(1 * time.Millisecond)
 	}
 	return string(password)
 }
