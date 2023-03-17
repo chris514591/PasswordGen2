@@ -38,6 +38,10 @@ func main() {
 		log.Fatalf("invalid password length: %d", *length)
 	}
 
+	if *count <= 0 {
+		log.Fatalf("invalid password count: %d", *count)
+	}
+
 	if *length == 10 {
 		for i := 0; i < *count; i++ {
 			password := generatePassword(*length)
