@@ -34,17 +34,18 @@ func main() {
 
 	for {
 		var length int
-		fmt.Print("Enter password length (default 10): ")
+		fmt.Print("Enter password length (Default length of 12, to use please press enter twice): ")
 		_, err := fmt.Scanf("%d", &length)
 		if err != nil {
-			length = 10
+			length = 12
 		}
+		_, _ = reader.ReadString('\n')
 
 		if length <= 0 {
 			log.Fatalf("invalid password length: %d", length)
 		}
 
-		if length == 10 {
+		if length == 12 {
 			password := generatePassword(length)
 			fmt.Println(password)
 			err1 := clipboard.WriteAll(password)
@@ -63,7 +64,7 @@ func main() {
 			}
 		}
 
-		fmt.Println("Generate another password? (y/n): ")
+		fmt.Print("Generate another password? (y/n): ")
 		answer, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading input:", err)
