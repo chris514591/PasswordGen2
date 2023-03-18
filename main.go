@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"log"
 	"math/rand"
@@ -25,11 +24,6 @@ func generatePassword(passLength int) string {
 	return string(password)
 }
 
-var (
-	length = flag.Int("length", 10, "password length")
-	count  = flag.Int("count", 1, "number of passwords to generate")
-)
-
 func main() {
 	// Create a log file to store errors.
 	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -38,26 +32,37 @@ func main() {
 	}
 	log.SetOutput(logFile)
 
-	// Parse the command-line arguments.
-	flag.Parse()
-
-	// Check for invalid password length and count.
-	if *length <= 0 {
-		log.Fatalf("invalid password length: %d", *length)
-	}
-	if *count <= 0 {
-		log.Fatalf("invalid password count: %d", *count)
-	}
-
 	// Create a reader to read user input.
 	reader := bufio.NewReader(os.Stdin)
 
 	// Loop until the user chooses to stop.
 	for {
+		// Parse the command-line arguments.
+		var length int
+		var count int
+		fmt.Print("Enter password length (default 10): ")
+		_, err := fmt.Scanf("%d", &length)
+		if err != nil {
+			length = 10
+		}
+		fmt.Println("Enter number of passwords to generate (default 1): ")
+		_, err = fmt.Scanf("%d", &count)
+		if err != nil {
+			count = 1
+		}
+
+		// Check for invalid password length and count.
+		if length <= 0 {
+			log.Fatalf("invalid password length: %d", length)
+		}
+		if count <= 0 {
+			log.Fatalf("invalid password count: %d", count)
+		}
+
 		// Generate one or more passwords.
-		if *length == 10 {
-			for i := 0; i < *count; i++ {
-				password := generatePassword(*length)
+		if length == 10 {
+			for i := 0; i < count; i++ {
+				password := generatePassword(length)
 				fmt.Println(password)
 				err1 := clipboard.WriteAll(password)
 				if err1 != nil {
@@ -66,7 +71,7 @@ func main() {
 			}
 			fmt.Println("Copied last generated password to clipboard!")
 		} else {
-			password := generatePassword(*length)
+			password := generatePassword(length)
 			fmt.Println(password)
 			err1 := clipboard.WriteAll(password)
 			if err1 != nil {
