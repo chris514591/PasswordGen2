@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
-	"strings"
 	"time"
-
-	"github.com/atotto/clipboard"
 )
 
 func generatePassword(passLength int) string {
@@ -23,6 +20,12 @@ func generatePassword(passLength int) string {
 	return string(password)
 }
 
+var (
+	length = flag.Int("length", 12, "password length")
+	count  = flag.Int("count", 1, "number of passwords to generate")
+	user   = flag.String("user", "", "user name")
+)
+
 func main() {
 	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -30,48 +33,41 @@ func main() {
 	}
 	log.SetOutput(logFile)
 
-	reader := bufio.NewReader(os.Stdin)
+	flag.Parse()
 
-	for {
-		var length int
-		fmt.Print("Enter password length (default 10): ")
-		_, err := fmt.Scanf("%d", &length)
-		if err != nil {
-			length = 10
-		}
+	if *length <= 0 {
+		log.Fatalf("invalid password length: %d", *length)
+	}
 
-		if length <= 0 {
-			log.Fatalf("invalid password length: %d", length)
-		}
+	if *count <= 0 {
+		log.Fatalf("invalid password count: %d", *count)
+	}
 
-		if length == 10 {
-			password := generatePassword(length)
-			fmt.Println(password)
-			err1 := clipboard.WriteAll(password)
-			if err1 != nil {
-				fmt.Println("Failed to copy to clipboard:", err1)
+	if *user == "" {
+		*user = fmt.Sprintf("user_%d", time.Now().Unix())
+	}
+
+	f, err := os.OpenFile("test123.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	if *length == 12 {
+		for i := 0; i < *count; i++ {
+			password := generatePassword(*length)
+			line := fmt.Sprintf("%s: %s\n", *user, password)
+			if _, err := f.WriteString(line); err != nil {
+				log.Fatal(err)
 			}
-			fmt.Println("Copied last generated password to clipboard!")
-		} else {
-			password := generatePassword(length)
 			fmt.Println(password)
-			err1 := clipboard.WriteAll(password)
-			if err1 != nil {
-				fmt.Println("Failed to copy to clipboard:", err1)
-			} else {
-				fmt.Println("Copied to clipboard!")
-			}
 		}
-
-		fmt.Println("Generate another password? (y/n): ")
-		answer, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println("Error reading input:", err)
-			break
+	} else {
+		password := generatePassword(*length)
+		line := fmt.Sprintf("%s: %s\n", *user, password)
+		if _, err := f.WriteString(line); err != nil {
+			log.Fatal(err)
 		}
-		answer = strings.TrimSpace(strings.ToLower(answer))
-		if answer == "n" {
-			break
-		}
+		fmt.Println(password)
 	}
 }
