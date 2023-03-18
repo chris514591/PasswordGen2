@@ -1,14 +1,18 @@
 package main
 
 import (
-	"flag"
+	"bufio"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
+
+	"github.com/atotto/clipboard"
 )
 
+// generatePassword generates a password with the specified length.
 func generatePassword(passLength int) string {
 	rand.Seed(time.Now().UnixNano())
 	characters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[]|:;<>,.?/~")
@@ -20,54 +24,62 @@ func generatePassword(passLength int) string {
 	return string(password)
 }
 
-var (
-	length = flag.Int("length", 12, "password length")
-	count  = flag.Int("count", 1, "number of passwords to generate")
-	user   = flag.String("user", "", "user name")
-)
-
 func main() {
+	// Create a log file to store errors.
 	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.SetOutput(logFile)
 
-	flag.Parse()
+	// Create a reader to read user input.
+	reader := bufio.NewReader(os.Stdin)
 
-	if *length <= 0 {
-		log.Fatalf("invalid password length: %d", *length)
-	}
+	// Loop until the user chooses to stop.
+	for {
+		// Parse the command-line arguments.
+		var length int
+		fmt.Print("Enter password length (default 10): ")
+		_, err := fmt.Scanf("%d", &length)
+		if err != nil {
+			length = 10
+		}
 
-	if *count <= 0 {
-		log.Fatalf("invalid password count: %d", *count)
-	}
+		// Check for invalid password length and count.
+		if length <= 0 {
+			log.Fatalf("invalid password length: %d", length)
+		}
 
-	if *user == "" {
-		*user = fmt.Sprintf("user_%d", time.Now().Unix())
-	}
-
-	f, err := os.OpenFile("test123.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	if *length == 12 {
-		for i := 0; i < *count; i++ {
-			password := generatePassword(*length)
-			line := fmt.Sprintf("%s: %s\n", *user, password)
-			if _, err := f.WriteString(line); err != nil {
-				log.Fatal(err)
-			}
+		// Generate one or more passwords.
+		if length == 10 {
+			password := generatePassword(length)
 			fmt.Println(password)
+			err1 := clipboard.WriteAll(password)
+			if err1 != nil {
+				fmt.Println("Failed to copy to clipboard:", err1)
+			}
+			fmt.Println("Copied last generated password to clipboard!")
+		} else {
+			password := generatePassword(length)
+			fmt.Println(password)
+			err1 := clipboard.WriteAll(password)
+			if err1 != nil {
+				fmt.Println("Failed to copy to clipboard:", err1)
+			} else {
+				fmt.Println("Copied to clipboard!")
+			}
 		}
-	} else {
-		password := generatePassword(*length)
-		line := fmt.Sprintf("%s: %s\n", *user, password)
-		if _, err := f.WriteString(line); err != nil {
-			log.Fatal(err)
+
+		// Ask the user if they want to generate another password.
+		fmt.Println("Generate another password? (y/n): ")
+		answer, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			break
 		}
-		fmt.Println(password)
+		answer = strings.TrimSpace(strings.ToLower(answer))
+		if answer == "n" {
+			break
+		}
 	}
 }
