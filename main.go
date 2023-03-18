@@ -12,7 +12,6 @@ import (
 	"github.com/atotto/clipboard"
 )
 
-// generatePassword generates a password with the specified length.
 func generatePassword(passLength int) string {
 	rand.Seed(time.Now().UnixNano())
 	characters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[]|:;<>,.?/~")
@@ -25,19 +24,15 @@ func generatePassword(passLength int) string {
 }
 
 func main() {
-	// Create a log file to store errors.
 	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.SetOutput(logFile)
 
-	// Create a reader to read user input.
 	reader := bufio.NewReader(os.Stdin)
 
-	// Loop until the user chooses to stop.
 	for {
-		// Parse the command-line arguments.
 		var length int
 		fmt.Print("Enter password length (default 10): ")
 		_, err := fmt.Scanf("%d", &length)
@@ -45,12 +40,10 @@ func main() {
 			length = 10
 		}
 
-		// Check for invalid password length and count.
 		if length <= 0 {
 			log.Fatalf("invalid password length: %d", length)
 		}
 
-		// Generate one or more passwords.
 		if length == 10 {
 			password := generatePassword(length)
 			fmt.Println(password)
@@ -70,7 +63,6 @@ func main() {
 			}
 		}
 
-		// Ask the user if they want to generate another password.
 		fmt.Println("Generate another password? (y/n): ")
 		answer, err := reader.ReadString('\n')
 		if err != nil {
