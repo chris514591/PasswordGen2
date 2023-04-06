@@ -35,7 +35,7 @@ func generatePassword(passLength int) string {
 var (
 	length = flag.Int("length", 12, "password length")
 	count  = flag.Int("count", 1, "number of passwords to generate")
-	user   = flag.String("user", "", "user name")
+	user   = flag.String("user", "", "username")
 )
 
 func loadConfig() (Config, error) {
@@ -56,7 +56,7 @@ func loadConfig() (Config, error) {
 }
 
 func main() {
-	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,8 +81,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
-	db, err := sql.Open("mysql", dsn)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
+
+	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal(err)
 	}
