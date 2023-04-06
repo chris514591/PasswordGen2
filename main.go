@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -11,6 +12,14 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+type Config struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Database string `json:"database"`
+}
 
 func generatePassword(passLength int) string {
 	rand.Seed(time.Now().UnixNano())
@@ -28,6 +37,23 @@ var (
 	count  = flag.Int("count", 1, "number of passwords to generate")
 	user   = flag.String("user", "", "user name")
 )
+
+func loadConfig() (Config, error) {
+	file, err := os.Open("config.json")
+	if err != nil {
+		return Config{}, err
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	config := Config{}
+	err = decoder.Decode(&config)
+	if err != nil {
+		return Config{}, err
+	}
+
+	return config, nil
+}
 
 func main() {
 	logFile, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -50,7 +76,13 @@ func main() {
 		*user = fmt.Sprintf("user_%d", time.Now().Unix())
 	}
 
-	db, err := sql.Open("mysql", "root:oPLaDeR@76@tcp(127.0.0.1:3306)/testdb")
+	config, err := loadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}

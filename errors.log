@@ -3,3 +3,11 @@
 2023/03/20 13:07:15 invalid password length: 0
 2023/04/06 11:13:36 Error 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
 2023/04/06 11:16:58 Error 1049 (42000): Unknown database 'testdb'
+2023/04/06 11:50:43 json: cannot unmarshal number into Go struct field .port of type string
+2023/04/06 13:26:48 missing configuration file
+2023/04/06 13:26:57 missing configuration file
+2023/04/06 13:33:01 missing configuration file
+2023/04/06 13:36:15 open : The system cannot find the file specified.
+2023/04/06 13:37:53 missing configuration file
+2023/04/06 13:38:06 json: cannot unmarshal string into Go struct field Config.database of type struct { Host string "json:\"host\""; Port int "json:\"port\""; Username string "json:\"username\""; Password string "json:\"password\""; Name string "json:\"name\"" }
+2023/04/06 13:38:46 json: cannot unmarshal number into Go struct field .port of type string
