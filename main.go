@@ -88,7 +88,7 @@ func main() {
 	}
 	defer db.Close()
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS passwords (
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS credentials (
 		userid INT AUTO_INCREMENT PRIMARY KEY,
 		username VARCHAR(255),
 		password VARCHAR(255)
@@ -100,14 +100,14 @@ func main() {
 	if *length == 12 {
 		for i := 0; i < *count; i++ {
 			password := generatePassword(*length)
-			if _, err := db.Exec("INSERT INTO passwords (username, password) VALUES (?, ?)", *user, password); err != nil {
+			if _, err := db.Exec("INSERT INTO credentials (username, password) VALUES (?, ?)", *user, password); err != nil {
 				log.Fatal(err)
 			}
 			fmt.Println(password)
 		}
 	} else {
 		password := generatePassword(*length)
-		if _, err := db.Exec("INSERT INTO passwords (username, password) VALUES (?, ?)", *user, password); err != nil {
+		if _, err := db.Exec("INSERT INTO credentials (username, password) VALUES (?, ?)", *user, password); err != nil {
 			log.Fatal(err)
 		}
 		fmt.Println(password)
