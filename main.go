@@ -1,12 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func generatePassword(passLength int) string {
@@ -47,25 +50,32 @@ func main() {
 		*user = fmt.Sprintf("user_%d", time.Now().Unix())
 	}
 
-	f, err := os.OpenFile("test123.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	db, err := sql.Open("mysql", "root:oPLaDeR@76@tcp(127.0.0.1:3306)/testdb")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
+	defer db.Close()
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS passwords (
+		userid INT AUTO_INCREMENT PRIMARY KEY,
+		username VARCHAR(255),
+		password VARCHAR(255)
+	)`)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if *length == 12 {
 		for i := 0; i < *count; i++ {
 			password := generatePassword(*length)
-			line := fmt.Sprintf("%s: %s\n", *user, password)
-			if _, err := f.WriteString(line); err != nil {
+			if _, err := db.Exec("INSERT INTO passwords (username, password) VALUES (?, ?)", *user, password); err != nil {
 				log.Fatal(err)
 			}
 			fmt.Println(password)
 		}
 	} else {
 		password := generatePassword(*length)
-		line := fmt.Sprintf("%s: %s\n", *user, password)
-		if _, err := f.WriteString(line); err != nil {
+		if _, err := db.Exec("INSERT INTO passwords (username, password) VALUES (?, ?)", *user, password); err != nil {
 			log.Fatal(err)
 		}
 		fmt.Println(password)

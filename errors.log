@@ -1,2 +1,5 @@
 2023/03/17 09:32:23 invalid password length: 0
 2023/03/17 09:33:23 invalid password count: 0
+2023/03/20 13:07:15 invalid password length: 0
+2023/04/06 11:13:36 Error 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
+2023/04/06 11:16:58 Error 1049 (42000): Unknown database 'testdb'
